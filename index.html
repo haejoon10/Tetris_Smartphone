@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>빠른 낙하 버튼 테트리스</title>
+<title>꾹 누르면 낙하 테트리스</title>
 <style>
 body {
   background: #111;
@@ -193,7 +193,7 @@ document.addEventListener("keydown",e=>{
   if(e.key==="ArrowUp") playerRotate();
 });
 
-/* 모바일 터치 이동 */
+/* 모바일 좌우 드래그 */
 let startX=0;
 canvas.addEventListener("touchstart", e => { startX = e.touches[0].clientX; });
 canvas.addEventListener("touchmove", e => {
@@ -205,8 +205,16 @@ canvas.addEventListener("touchmove", e => {
 /* 회전 버튼 */
 rotateBtn.addEventListener("click",()=>{ playerRotate(); });
 
-/* 빠른 낙하 버튼 */
-dropBtn.addEventListener("click",()=>{ playerDrop(); });
+/* 빠른 낙하 버튼: 꾹 누르면 계속 낙하 */
+let dropIntervalId;
+dropBtn.addEventListener("mousedown", ()=>{ // 클릭 시작
+  playerDrop();
+  dropIntervalId = setInterval(playerDrop, 100); // 0.1초마다 한 칸씩 내려감
+});
+dropBtn.addEventListener("mouseup", ()=>{ clearInterval(dropIntervalId); }); // 클릭 끝
+dropBtn.addEventListener("mouseleave", ()=>{ clearInterval(dropIntervalId); }); // 마우스 나가도 멈춤
+dropBtn.addEventListener("touchstart", e=>{ e.preventDefault(); playerDrop(); dropIntervalId = setInterval(playerDrop, 100); });
+dropBtn.addEventListener("touchend", e=>{ e.preventDefault(); clearInterval(dropIntervalId); });
 
 resetPlayer(); updateUI(); update();
 </script>
